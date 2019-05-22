@@ -7,7 +7,7 @@
 void * _pbcM_malloc(size_t sz);
 void _pbcM_free(void *p);
 void * _pbcM_realloc(void *p, size_t sz);
-void _pbcM_memory();
+void _pbcM_memory(void);
 
 struct heap;
 

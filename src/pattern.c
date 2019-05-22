@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 static void
 set_default_v(void * output, int ctype, pbc_var defv) {
@@ -563,7 +564,7 @@ _pack_field(struct _pattern_field *pf , int ctype, struct pbc_slice *s, void *in
 		if (input_slice->len >= 0)
 			goto _string;
 		string_slice.buffer = input_slice->buffer;
-		string_slice.len = strlen((const char *)string_slice.buffer) - input_slice->len;
+		string_slice.len = (int)(strlen((const char *)string_slice.buffer) - input_slice->len);
 		input_slice = &string_slice;
 	
 		goto _string;
@@ -801,7 +802,7 @@ pbc_pattern_pack(struct pbc_pattern *pat, void *input, struct pbc_slice * s)
 			return len;
 		}
 	}
-	int len = (char *)slice.buffer - (char *)s->buffer;
+	int len = (int)((char *)slice.buffer - (char *)s->buffer);
 	int ret = s->len - len;
 	s->len = len;
 	return ret;
@@ -831,7 +832,7 @@ pbc_pattern_unpack(struct pbc_pattern *pat, struct pbc_slice *s, void * output) 
 	for (i=0;i<ctx->number;i++) {
 		struct _pattern_field * f = bsearch_pattern(pat, ctx->a[i].wire_id >> 3);
 		if (f) {
-			int index = f - pat->f;
+			int index = (int)(f - pat->f);
 			if (field[index] == false) {
 				field[index] = true;
 				++fc;
@@ -1015,7 +1016,7 @@ _check_ctype(struct _field * field, struct _pattern_field *f) {
 
 struct pbc_pattern *
 _pattern_new(struct _message *m, const char *format) {
-	int len = strlen(format);
+	int len = (int)strlen(format);
 	char * temp = (char *)alloca(len+1);
 	int n = _scan_pattern(format, temp);
 	struct pbc_pattern * pat = _pbcP_new(m->env, n);
@@ -1076,7 +1077,7 @@ pbc_pattern_new(struct pbc_env * env , const char * message, const char * format
 		return _pattern_new(m , format+1);
 	}
 
-	int len = strlen(format);
+	int len = (int)strlen(format);
 	char * temp = (char *)alloca(len+1);
 	int n = _scan_pattern(format, temp);
 	struct pbc_pattern * pat = _pbcP_new(env, n);

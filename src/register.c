@@ -93,15 +93,15 @@ _set_default(struct _stringpool *pool, struct _field *f , int ptype, const char 
 	case PTYPE_SFIXED64:
 	case PTYPE_SINT64: {
 		long long v = strtoll(value, NULL, 10);
-		f->default_v->integer.low = (long) v;
-		f->default_v->integer.hi = (long)(v >> 32);
+		f->default_v->integer.low = (int) v;
+		f->default_v->integer.hi = (int)(v >> 32);
 		break;
 		}
 	case PTYPE_INT32:
 	case PTYPE_FIXED32:
 	case PTYPE_SFIXED32:
 	case PTYPE_SINT32: {
-		int low = strtol(value, NULL, 10);
+		int low = (int)strtol(value, NULL, 10);
 		f->default_v->integer.low = low;
 		if (low < 0) {
 			f->default_v->integer.hi = -1;
@@ -111,7 +111,7 @@ _set_default(struct _stringpool *pool, struct _field *f , int ptype, const char 
 		break;
 	}
 	case PTYPE_UINT32:
-		f->default_v->integer.low = strtoul(value, NULL, 10);
+		f->default_v->integer.low = (int)strtoul(value, NULL, 10);
 		f->default_v->integer.hi = 0;
 		break;
 	case PTYPE_BYTES:
@@ -178,6 +178,15 @@ _register_extension(struct pbc_env *p, struct _stringpool *pool , const char * p
 }
 
 static void
+_init_message_options(struct pbc_env *p, struct pbc_rmessage * message_type, const char *name) {
+    struct _message *message = _pbcP_get_message(p, name);
+    struct pbc_rmessage *options = pbc_rmessage_message(message_type, "options", 0);
+    if (options != NULL) {
+        message->map_entry = pbc_rmessage_integer(options, "map_entry", 0, NULL);
+    }
+}
+
+static void
 _register_message(struct pbc_env *p, struct _stringpool *pool, struct pbc_rmessage * message_type, const char *prefix, int prefix_sz, pbc_array queue) {
 	int name_sz;
 	const char * name = pbc_rmessage_string(message_type, "name", 0 , &name_sz);
@@ -199,6 +208,7 @@ _register_message(struct pbc_env *p, struct _stringpool *pool, struct pbc_rmessa
 	}
 
 	_pbcP_init_message(p, temp);
+    _init_message_options(p, message_type, temp);
 
 	_register_extension(p, pool, temp, sz,message_type, queue);
 
@@ -291,7 +301,7 @@ _register_no_dependency(struct pbc_env * p,struct pbc_rmessage ** files , int n 
 			break;
 		case CHECK_FILE_OK: {
 			struct _stringpool *pool = _pbcS_new();
-			filename = _pbcS_build(pool, filename , strlen(filename));
+			filename = _pbcS_build(pool, filename , (int)strlen(filename));
 			_pbcM_sp_insert(p->files , filename, pool);
 			_register(p,files[i],pool);
 			files[i] = NULL;

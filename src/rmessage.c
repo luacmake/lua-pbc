@@ -352,7 +352,7 @@ pbc_rmessage_string(struct pbc_rmessage * m , const char *key , int index, int *
 
 	if (type == PTYPE_ENUM) {
 		if (sz) {
-			*sz = strlen(var->e.name);
+			*sz = (int)strlen(var->e.name);
 		}
 		return var->e.name;
 	}

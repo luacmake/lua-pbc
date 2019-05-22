@@ -141,6 +141,7 @@ _pbcP_init_message(struct pbc_env * p, const char *name) {
 		m->id = NULL;
 		m->name = _pbcM_sp_new(0 , NULL);
 		m->env = p;
+        m->map_entry = 0;
 		_pbcM_sp_insert(p->msgs, name, m);
 
 		return m;
@@ -249,6 +250,16 @@ pbc_type(struct pbc_env * p, const char * type_name , const char * key , const c
 	}
 	struct _field * field = (struct _field *)_pbcM_sp_query(m->name, key);
 	return _pbcP_type(field, type);
+}
+
+int
+pbc_map_entry(struct pbc_env * p, const char * type_name) {
+   	struct _message *m = _pbcP_get_message(p, type_name);
+    if (m == NULL) {
+        return 0;
+    } else {
+        return m->map_entry;
+    }
 }
 
 int

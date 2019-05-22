@@ -12,6 +12,7 @@
 #ifndef _MSC_VER
 #include <stdbool.h>
 #endif
+#include <stdbool.h>
 
 #define WMESSAGE_SIZE 64
 
@@ -64,12 +65,12 @@ pbc_wmessage_delete(struct pbc_wmessage *m) {
 static void
 _expand_message(struct pbc_wmessage *m, int sz) {
 	if (m->ptr + sz > m->endptr) {
-		int cap = m->endptr - m->buffer;
-		sz = m->ptr + sz - m->buffer;
+		int cap = (int)(m->endptr - m->buffer);
+		sz = (int)(m->ptr + sz - m->buffer);
 		do {
 			cap = cap * 2;
 		} while ( sz > cap ) ;
-		int old_size = m->ptr - m->buffer;
+		int old_size = (int)(m->ptr - m->buffer);
 		uint8_t * buffer = (uint8_t *)_pbcH_alloc(m->heap, cap);
 		memcpy(buffer, m->buffer, old_size);
 		m->ptr = buffer + (m->ptr - m->buffer);
@@ -254,7 +255,7 @@ pbc_wmessage_string(struct pbc_wmessage *m, const char *key, const char * v, int
 	if (len <=0) {
 		varlen = true;
 		// -1 for add '\0'
-		len = strlen(v) - len;
+		len = (int)(strlen(v) - len);
 	}
 	if (f->label == LABEL_PACKED) {
 		if (f->type == PTYPE_ENUM) {
@@ -397,7 +398,7 @@ static void
 _pack_packed_varint(struct _packed *p,struct pbc_wmessage *m) {
 	int n = pbc_array_size(p->data);
 
-	int offset = m->ptr - m->buffer;
+	int offset = (int)(m->ptr - m->buffer);
 	int len = n * 2;
 	if (p->ptype == PTYPE_BOOL) {
 		len = n;
@@ -448,7 +449,7 @@ _pack_packed_varint(struct _packed *p,struct pbc_wmessage *m) {
 		m->type->env->lasterror = "wmessage type error when pack packed";
 		break;
 	}
-	int end_offset = m->ptr - m->buffer;
+	int end_offset = (int)(m->ptr - m->buffer);
 	int end_len = end_offset - (offset + len_len);
 	if (end_len != len) {
 		uint8_t temp[10];
@@ -511,7 +512,7 @@ pbc_wmessage_buffer(struct pbc_wmessage *m, struct pbc_slice *slice) {
 		}
 	}
 	slice->buffer = m->buffer;
-	slice->len = m->ptr - m->buffer;
+	slice->len = (int)(m->ptr - m->buffer);
 
 	return m->buffer;
 }

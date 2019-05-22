@@ -39,6 +39,7 @@ struct _message {
 	struct map_sp * name;	// string -> _field
 	struct pbc_rmessage * def;	// default message
 	struct pbc_env * env;
+    int map_entry;
 };
 
 struct _enum {

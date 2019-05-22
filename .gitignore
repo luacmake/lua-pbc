@@ -3,6 +3,7 @@
 *.opensdf
 *.d
 *.o
+*.so
 Debug
 Release
 build
