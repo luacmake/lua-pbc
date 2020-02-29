@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -O2 -fPIC -Wall
-LUADIR = /usr/include
+LUADIR = /usr/local/lua-5.3.5/src
 TARGET = protobuf.so
 
 .PHONY : all clean
